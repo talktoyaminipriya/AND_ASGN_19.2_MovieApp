@@ -1,3 +1,4 @@
+
 package com.example.priya.movieapp;
 
 import android.support.v7.app.AppCompatActivity;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private class GetMovies extends AsyncTask<Void, Void, Void> {
+        //invoked on the UI thread before the task is executed.
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -46,7 +48,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
+        // invoked on the background thread immediately after onPreExecute() finishes executing. performed in the background
         protected Void doInBackground(Void... arg0) {
+            
             HttpHandler sh = new HttpHandler();
             // Making a request to url and getting response
             String url = "http://api.themoviedb.org/3/tv/top_rated?api_key=8496be0b2149805afa458ab8ec27560c";
@@ -60,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                     // Getting JSON Array node
                     JSONArray contacts = jsonObj.getJSONArray("results");
 
-                    // looping through All Contacts
+                    // looping through All Movies
                     for (int i = 0; i < contacts.length(); i++) {
                         JSONObject c = contacts.getJSONObject(i);
                         String original_name = c.getString("original_name");
@@ -68,11 +72,7 @@ public class MainActivity extends AppCompatActivity {
                         String id = c.getString("id");
 
 
-                        // Phone node is JSON Object
-                      //  JSONObject phone = c.getJSONObject("phone");
-                      //  String mobile = phone.getString("mobile");
-                      //  String home = phone.getString("home");
-                      //  String office = phone.getString("office");
+       
 
                         // tmp hash map for single contact
                         HashMap<String, String> movie = new HashMap<>();
@@ -81,9 +81,9 @@ public class MainActivity extends AppCompatActivity {
                         movie.put("original_name",original_name );
                         movie.put("vote_count", vote_count);
                         movie.put("id", id);
-                        //contact.put("mobile", mobile);
+                       
 
-                        // adding contact to contact list
+                        // adding Movie to Movie list
                         movieList.add(movie);
                     }
                 } catch (final JSONException e) {
@@ -115,11 +115,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
+         //invoked on the UI thread after the background computation finishes
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             ListAdapter adapter = new SimpleAdapter(MainActivity.this, movieList,
                     R.layout.list_item, new String[]{ "original_name","vote_count","id"},
                     new int[]{R.id.original_name, R.id.vote_count,R.id.id});
+            // setting Adapter
             lv.setAdapter(adapter);
         }
     }
